@@ -15,7 +15,7 @@ public:
 
   void init(seastar::packet_queue* pq,
       output_stream<char>&& output_stream);
-  bool is_init();
+  const std::atomic_bool& is_init();
 
   void put(user_packet* p);
   void put(const std::vector<user_packet*>& v);
@@ -36,5 +36,6 @@ private:
   bool volatile _is_channel_broken;
   std::function<void ( void (channel::*func)())> _reconnect_func;
   std::atomic_flag _is_reconnecting = ATOMIC_FLAG_INIT;
+  std::atomic_bool _init;
 };
 }

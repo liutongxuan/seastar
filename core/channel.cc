@@ -4,13 +4,14 @@
 namespace seastar {
   channel::channel(const std::string& addr)
     : _packet_queue(nullptr), _addr(addr),
-      _reconnect_func(nullptr), _is_channel_broken(false) {
+      _reconnect_func(nullptr), _is_channel_broken(false), _init(false) {
   }
   
   void channel::init(seastar::packet_queue* pq,
       output_stream<char>&& output_stream) {
     _packet_queue = pq;
     _output_stream = std::move(output_stream);
+    _init = true;
   }
 
   void channel::put(user_packet* p) {
@@ -25,8 +26,8 @@ namespace seastar {
     }
   }
 
-  bool channel::is_init() {
-    return _packet_queue != nullptr;
+  const std::atomic_bool& channel::is_init() {
+    return _init;
   }
 
   output_stream<char>* channel::get_output_stream() {
